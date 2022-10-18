@@ -57,11 +57,7 @@ function init() {
   // ? Projectile variables
   let projectileCurrentPos
   let projectileNextPos
-  // Player projectile current position 
-  //const projectileArray = []
-  // Enemy projectile current position 
-  // Has collided? 
-
+  let projectileOnGrid = false
 
   // ! FUNCTIONS
   // ? Create game grid 
@@ -86,44 +82,24 @@ function init() {
 
   function startGame() {
     console.log('game started')
+    //create game grid should be here
     //spawn enemies at starting position
     spawnEnemies()
-    //spawn player
-    playerCurrentPos = 94
-    cells[playerCurrentPos].classList.add('player')
+    //spawn player at starting position
+    spawnPlayer(94)
   }
 
   // ? TIMERS
   function mainGameTimer() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
+        console.log(enemyCurrentPos)
         updateEnemyPos()
-        console.log(cells[0].classList.length)
       }, 1000)
       startGame()
     }
   }
-  // Handle projectile movement 
-  function updateProjectilePos() {
-    projectileTimer = setInterval(() => {
-      cells[projectileCurrentPos].classList.remove('projectile')
-      // if projectile current pos >= gridHeight AND the cell doesn't contain an enemy AND cell doesn't contain a projectile
-      if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === false && cells[projectileCurrentPos].classList.contains('projectile') === false) {
-        projectileNextPos = projectileCurrentPos - 10
-        cells[projectileNextPos].classList.add('projectile')
-        projectileCurrentPos = projectileNextPos
-      } else if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === true) {
-        enemyCurrentPos.splice(projectileNextPos, 1)
-        cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
-        clearInterval(projectileTimer)
-      } else {
-        //cells[projectileCurrentPos].classList.remove('projectile')
-        //clearInterval(projectileTimer)
-      }
 
-
-    }, 100)
-  }
 
   // ? Reset game function 
   function reset() {
@@ -131,10 +107,10 @@ function init() {
     window.location.reload()
   }
 
-  // MOVEMENT 
+  // ! MOVEMENT 
   //Update enemy position in grid 
   function updateEnemyPos() {
-    //If last item in array is = width of the grid - 1 and the direction is right, increment currentPos by 1 
+    //If last item in array = width of the grid - 1 and the direction is right, increment currentPos by 1 
     if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth !== gridWidth - 1 && enemyDirection === 'right') {
       enemyNextPos = enemyCurrentPos.map(cell => {
         cell++
@@ -169,7 +145,33 @@ function init() {
     })
   }
 
-  // ? Player functions 
+  // Handle projectile movement 
+  function updateProjectilePos() {
+    projectileTimer = setInterval(() => {
+      // remove previous projectile
+      cells[projectileCurrentPos].classList.remove('projectile')
+
+      // If projectile is  not at top of grid and cell doesn't contain an enemy or another projectile, move projectile forward away from player 
+      if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') !== true && cells[projectileCurrentPos].classList.contains('projectile') !== true) {
+        projectileNextPos = projectileCurrentPos - 10
+        cells[projectileNextPos].classList.add('projectile')
+        projectileCurrentPos = projectileNextPos
+
+        // If projectile is  not at top of grid and cell contains an enemy or another projectile, move projectile forward away from player 
+      } else if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === true) {
+        enemyCurrentPos.splice(enemyCurrentPos, 1)
+        cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
+        projectileOnGrid = false
+        clearInterval(projectileTimer)
+
+      } else {
+        cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
+        projectileOnGrid = false
+        clearInterval(projectileTimer)
+      }
+    }, 100)
+  }
+
   // Function to handle player movement from user input 
   function handlePlayerMovement(event) {
     const key = event.keyCode
@@ -187,21 +189,29 @@ function init() {
     cells[playerCurrentPos].classList.add('player')
   }
 
+  // ? SPAWN FUNCTIONS
+  //Player
+  function spawnPlayer(position) {
+    playerCurrentPos = position
+    cells[playerCurrentPos].classList.add('player')
+  }
 
-  // ? Enemy functions 
-  // Spawn - initial position 
+  // Enemy
   function spawnEnemies() {
-    //dynamically create array here7
+    //dynamically create array here
     enemyCurrentPos.push(1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16)
     enemyCurrentPos.forEach(cell => {
       cells[cell].classList.add('enemy')
     })
   }
-
+  // Projectiles
   function spawnProjectile(position) {
-    projectileCurrentPos = position - 10
-    cells[projectileCurrentPos].classList.add('projectile')
-    updateProjectilePos()
+    if (projectileOnGrid === false) {
+      projectileCurrentPos = position - 10
+      cells[projectileCurrentPos].classList.add('projectile')
+      updateProjectilePos()
+      projectileOnGrid = true
+    }
   }
 
 

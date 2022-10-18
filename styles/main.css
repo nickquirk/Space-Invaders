@@ -5,6 +5,7 @@
 body {
   height: 100vh;
   margin: 0;
+  font-family: 'Orbitron', sans-serif;
 }
 
 #header-container {
@@ -22,6 +23,7 @@ body {
 #button-container {
   display: flex;
   align-items: center;
+  height: 30px;
 }
 
 .grid-wrapper {
@@ -47,6 +49,24 @@ body {
   flex-grow: 1;
   height: 10%;
   width: 10%;
+}
+
+/* #start-button{
+  display: flex;
+  background-image: url(../assets/button1.jpeg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 30px;
+  width: 100px;
+  border: 2px solid black;
+} */
+
+button {
+  margin: 10px;
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-family: 'Orbitron', sans-serif;
 }
 
 .enemy {
