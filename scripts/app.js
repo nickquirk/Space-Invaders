@@ -3,10 +3,6 @@
 // resize cells automatically depending on grid size 
 
 function init() {
-
-
-
-
   // ! ELEMENTS
   // start button
   const startButton = document.querySelector('#start-button')
@@ -14,6 +10,10 @@ function init() {
   const resetButton = document.querySelector('#reset-button')
   // grid
   const grid = document.querySelector('.grid')
+
+  // enemies 
+
+  //console.log(enemies)
 
   // grid cells
   const cells = []
@@ -44,9 +44,49 @@ function init() {
   // Current position 
 
   // ? Enemy variables 
-  // Starting position 
+  // Starting position
+
+
+  // ? Enemy Class 
+  class Enemy {
+    constructor(id, currentPos) {
+      this.id = id
+      this.currentPos = currentPos
+      this.isHit = false
+      cells[currentPos].classList.add('enemy')
+
+    }
+    handleHit() {
+      //this.isHit = true
+      //cells[this.currentPos].classList.add('blank')
+      //console.log(`enemy ${this.id} is hit`)
+    }
+  }
+
+  function updateEnemyPosition(direction) {
+    if (direction === 'right') {
+      enemyArray.forEach(enemy => {
+        cells[enemy.currentPos].classList.remove('enemy')
+      })
+      enemyArray.forEach(enemy => { 
+        enemy.currentPos = enemy.currentPos + 1 
+      })
+      enemyArray.forEach(enemy => { 
+        cells[enemy.currentPos].classList.add('enemy') 
+      })
+    } else {
+      console.log('boom')
+    }
+  }
+
+  function edgeOfFormation() {
+    const currentEnemies = enemyArray.findIndex((obj => obj.isHit === true))
+    console.log(currentEnemies)
+  }
+
 
   // Current position 
+  const enemyArray = []
   let enemyCurrentPos = []
   let enemyNextPos = []
   let enemyDirection = 'right'
@@ -93,11 +133,9 @@ function init() {
   function mainGameTimer() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
-        console.log(enemyCurrentPos)
-        
+        //console.log(enemyArray)
         updateEnemyPos()
-        console.log(enemyNextPos)
-      }, 2000)
+      }, 1000)
       startGame()
     }
   }
@@ -114,10 +152,9 @@ function init() {
   function updateEnemyPos() {
     //If last item in array = width of the grid - 1 and the direction is right, increment currentPos by 1 
     if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth !== gridWidth - 1 && enemyDirection === 'right') {
-      enemyNextPos = enemyCurrentPos.map(cell => {
-        cell++
-        return cell
-      })
+      updateEnemyPosition(enemyDirection)
+      edgeOfFormation()
+
     } else if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth === gridWidth - 1 && enemyDirection === 'right') {
       enemyNextPos = enemyCurrentPos.map(cell => {
         cell += 10
@@ -161,8 +198,12 @@ function init() {
 
         // If projectile is  not at top of grid and cell contains an enemy or another projectile, move projectile forward away from player 
       } else if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === true) {
-        enemyCurrentPos.splice(projectileCurrentPos, 2)
-        enemyNextPos.splice(projectileCurrentPos, 1)
+        //get id of enemy object that is in cell id of projectile current pos 
+        //const enemyId = enemyArray.find(enemy => enemy.currentPos === cells[projectileCurrentPos].id)
+        const enemyHit = parseInt(cells[projectileCurrentPos].id)
+        console.log(enemyHit)
+        enemyArray[enemyHit].handleHit(enemyHit)
+
         cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
         projectileOnGrid = false
         clearInterval(projectileTimer)
@@ -192,7 +233,7 @@ function init() {
     cells[playerCurrentPos].classList.add('player')
   }
 
-  // ? SPAWN FUNCTIONS
+  // ! SPAWN FUNCTIONS
   //Player
   function spawnPlayer(position) {
     playerCurrentPos = position
@@ -202,9 +243,13 @@ function init() {
   // Enemy
   function spawnEnemies() {
     //dynamically create array here
-    enemyCurrentPos.push(1, 2, 11, 12)
+    let index = 0
+    enemyCurrentPos.push(1, 2, 3, 4, 5, 11, 12, 13, 14, 15)
     enemyCurrentPos.forEach(cell => {
-      cells[cell].classList.add('enemy')
+      const enemy = new Enemy(index, parseInt(cell))
+      enemyArray.push(enemy)
+      console.log(`enemy added at cell ${cell}`)
+      index++
     })
   }
   // Projectiles
