@@ -94,8 +94,10 @@ function init() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
         console.log(enemyCurrentPos)
+        
         updateEnemyPos()
-      }, 1000)
+        console.log(enemyNextPos)
+      }, 2000)
       startGame()
     }
   }
@@ -159,7 +161,8 @@ function init() {
 
         // If projectile is  not at top of grid and cell contains an enemy or another projectile, move projectile forward away from player 
       } else if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === true) {
-        enemyCurrentPos.splice(enemyCurrentPos, 1)
+        enemyCurrentPos.splice(projectileCurrentPos, 2)
+        enemyNextPos.splice(projectileCurrentPos, 1)
         cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
         projectileOnGrid = false
         clearInterval(projectileTimer)
@@ -199,7 +202,7 @@ function init() {
   // Enemy
   function spawnEnemies() {
     //dynamically create array here
-    enemyCurrentPos.push(1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16)
+    enemyCurrentPos.push(1, 2, 11, 12)
     enemyCurrentPos.forEach(cell => {
       cells[cell].classList.add('enemy')
     })
