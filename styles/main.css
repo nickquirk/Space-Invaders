@@ -6,24 +6,43 @@ body {
   height: 100vh;
   margin: 0;
   font-family: 'Orbitron', sans-serif;
+  color: white;
 }
 
 #header-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: rgba(0, 0, 0, 0.76);
+  background-image: url(../assets/preview-411962-722lundHsI-high_0000.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+h1 {
+  font-size: 40px;
+  align-items: center;
+  padding: 20px;
+  /* border: 3px solid rgba(255, 255, 255, 0.628); */
+  border-radius: 10px;
+  color: rgb(120, 200, 255);
+  background-color: rgba(4, 4, 95, 0.817);
+  background-image: url(../assets/preview-411962-722lundHsI-high_0000.jpg);
+  text-decoration: overline;
 }
 
 #interface-container {
   display: flex;
   justify-content: space-around;
   width: 100%;
+  background-color: rgba(0, 0, 0, 0.76);
 }
 
 #button-container {
   display: flex;
   align-items: center;
-  height: 30px;
+  margin: 0;
+  height: 100%;
 }
 
 .grid-wrapper {
@@ -31,6 +50,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  /* background-image: url('../assets/pngtree-blue-information-technology-background-framelinepointblue-image_63400.jpg'); */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .grid {
@@ -47,8 +69,9 @@ body {
 .grid div {
   border: 1px solid lightgrey;
   flex-grow: 1;
-  height: 10%;
-  width: 10%;
+  height: calc(100% / 12);
+  width: calc(100% / 14);
+  color: black;
 }
 
 /* #start-button{
@@ -62,11 +85,17 @@ body {
   border: 2px solid black;
 } */
 
+main {
+  /* background-image: url(../assets/Background.jpeg); */
+}
+
 button {
-  margin: 10px;
+  margin: 15px;
   padding: 5px 15px;
   border-radius: 5px;
   font-family: 'Orbitron', sans-serif;
+  color: rgb(120, 200, 255);
+  background-color: rgba(0, 0, 0, 0.499);
 }
 
 .enemy {
@@ -90,6 +119,4 @@ button {
   background-size: contain;
 }
 
-.blank {
-  
-}
+

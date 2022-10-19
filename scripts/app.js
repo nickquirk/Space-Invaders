@@ -10,11 +10,9 @@ function init() {
   const resetButton = document.querySelector('#reset-button')
   // grid
   const grid = document.querySelector('.grid')
-
   // enemies 
-
-  //console.log(enemies)
-
+  const enemies = document.querySelector('.enemy')
+  console.log(enemies)
   // grid cells
   const cells = []
   // lives display span
@@ -30,8 +28,8 @@ function init() {
 
   // ? Grid variables
   // width of grid
-  const gridWidth = 10
-  const gridHeight = 10
+  const gridWidth = 14
+  const gridHeight = 12
   const cellCount = gridWidth * gridHeight
   grid.style.offsetHeight = '50px'
   grid.style.offsetWidth = '50px'
@@ -53,13 +51,12 @@ function init() {
       this.id = id
       this.currentPos = currentPos
       this.isHit = false
-      cells[currentPos].classList.add('enemy')
-
+      cells[this.currentPos].classList.add('enemy')
     }
     handleHit() {
-      //this.isHit = true
-      //cells[this.currentPos].classList.add('blank')
-      //console.log(`enemy ${this.id} is hit`)
+      this.isHit = true
+      cells[this.currentPos].classList.remove('enemy')
+      console.log(`enemy ${this.id} is hit`)
     }
   }
 
@@ -78,12 +75,6 @@ function init() {
       console.log('boom')
     }
   }
-
-  function edgeOfFormation() {
-    const currentEnemies = enemyArray.findIndex((obj => obj.isHit === true))
-    console.log(currentEnemies)
-  }
-
 
   // Current position 
   const enemyArray = []
@@ -126,7 +117,7 @@ function init() {
     //spawn enemies at starting position
     spawnEnemies()
     //spawn player at starting position
-    spawnPlayer(94)
+    spawnPlayer(160)
   }
 
   // ? TIMERS
@@ -153,7 +144,6 @@ function init() {
     //If last item in array = width of the grid - 1 and the direction is right, increment currentPos by 1 
     if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth !== gridWidth - 1 && enemyDirection === 'right') {
       updateEnemyPosition(enemyDirection)
-      edgeOfFormation()
 
     } else if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth === gridWidth - 1 && enemyDirection === 'right') {
       enemyNextPos = enemyCurrentPos.map(cell => {
@@ -192,17 +182,16 @@ function init() {
 
       // If projectile is  not at top of grid and cell doesn't contain an enemy or another projectile, move projectile forward away from player 
       if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') !== true && cells[projectileCurrentPos].classList.contains('projectile') !== true) {
-        projectileNextPos = projectileCurrentPos - 10
+        projectileNextPos = projectileCurrentPos - gridWidth
         cells[projectileNextPos].classList.add('projectile')
         projectileCurrentPos = projectileNextPos
 
         // If projectile is  not at top of grid and cell contains an enemy or another projectile, move projectile forward away from player 
       } else if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === true) {
         //get id of enemy object that is in cell id of projectile current pos 
-        //const enemyId = enemyArray.find(enemy => enemy.currentPos === cells[projectileCurrentPos].id)
-        const enemyHit = parseInt(cells[projectileCurrentPos].id)
-        console.log(enemyHit)
-        enemyArray[enemyHit].handleHit(enemyHit)
+        const enemyHitLocation = parseInt(cells[projectileCurrentPos].id)
+        const enemyId = enemyArray.findIndex(enemy => enemy.currentPos === enemyHitLocation)
+        enemyArray[enemyId].handleHit()
 
         cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
         projectileOnGrid = false
@@ -244,7 +233,7 @@ function init() {
   function spawnEnemies() {
     //dynamically create array here
     let index = 0
-    enemyCurrentPos.push(1, 2, 3, 4, 5, 11, 12, 13, 14, 15)
+    enemyCurrentPos.push(0, 1, 2, 3, 4, 5, 14, 15, 16, 17, 18)
     enemyCurrentPos.forEach(cell => {
       const enemy = new Enemy(index, parseInt(cell))
       enemyArray.push(enemy)
@@ -255,7 +244,7 @@ function init() {
   // Projectiles
   function spawnProjectile(position) {
     if (projectileOnGrid === false) {
-      projectileCurrentPos = position - 10
+      projectileCurrentPos = position - gridWidth
       cells[projectileCurrentPos].classList.add('projectile')
       updateProjectilePos()
       projectileOnGrid = true
