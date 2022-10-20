@@ -11,8 +11,6 @@ function init() {
   // grid
   const grid = document.querySelector('.grid')
   // enemies 
-  const enemies = document.querySelector('.enemy')
-  console.log(enemies)
   // grid cells
   const cells = []
   // lives display span
@@ -43,6 +41,10 @@ function init() {
 
   // ? Enemy variables 
   // Starting position
+  const enemyArray = []
+  let enemyCurrentPos = []
+  let enemyNextPos = []
+  let enemyDirection = 1
 
 
   // ? Enemy Class 
@@ -51,6 +53,8 @@ function init() {
       this.id = id
       this.currentPos = currentPos
       this.isHit = false
+      this.atRightEdge
+      this.atLeftEdge
       cells[this.currentPos].classList.add('enemy')
     }
     handleHit() {
@@ -58,29 +62,75 @@ function init() {
       cells[this.currentPos].classList.remove('enemy')
       console.log(`enemy ${this.id} is hit`)
     }
-  }
-
-  function updateEnemyPosition(direction) {
-    if (direction === 'right') {
-      enemyArray.forEach(enemy => {
-        cells[enemy.currentPos].classList.remove('enemy')
-      })
-      enemyArray.forEach(enemy => { 
-        enemy.currentPos = enemy.currentPos + 1 
-      })
-      enemyArray.forEach(enemy => { 
-        cells[enemy.currentPos].classList.add('enemy') 
-      })
-    } else {
-      console.log('boom')
+    getId() {
+      return this.id
+    }
+    getLocation() {
+      return this.currentPos
+    }
+    getHitStatus() {
+      return this.isHit
+    }
+    isAtRightEdge() {
+      if (enemyDirection === 1 && this.currentPos % gridWidth === gridWidth - 1) {
+        console.log('enemy at right edge')
+        this.atRightEdge = true
+        return true
+      } else {
+        return false
+      }
+    }
+    isAtLeftEdge() {
+      if (enemyDirection === -1 && this.currentPos % gridWidth === 0) {
+        console.log('enemy at left edge')
+        this.atLeftEdge = true
+        return true
+      } else {
+        return false
+      }
     }
   }
 
+  // function to handle enemy movement
+  function updateEnemyPosition() {
+    if (enemyDirection === 1) {
+      enemyArray.forEach(enemy => {
+        cells[enemy.currentPos].classList.remove('enemy')
+      })
+      enemyArray.forEach(enemy => {
+        if (enemy.atRightEdge !== true && enemyDirection === 1) {
+          enemy.currentPos = enemy.currentPos + 1
+        } else if (enemy.isAtLeftEdge !== true && enemyDirection === -1) {
+          console.log('moving left')
+          enemy.currentPos = enemy.currentPos - 1
+        } else {
+          // reverse enemy direction by using 1 and - 1
+          enemy.currentPos = enemy.currentPos + gridWidth
+          enemyDirection = -1 * enemyDirection
+        }
+      })
+      enemyArray.forEach(enemy => {
+        if (enemy.isHit !== true) {
+          cells[enemy.currentPos].classList.add('enemy')
+        }
+      })
+    } else {
+      console.log('this should not be triggered')
+    }
+  }
+
+  function checkBoundary() {
+    enemyArray.forEach(enemy => {
+      enemy.isAtLeftEdge()
+      enemy.isAtRightEdge()
+    })
+  }
+
+
+
+
   // Current position 
-  const enemyArray = []
-  let enemyCurrentPos = []
-  let enemyNextPos = []
-  let enemyDirection = 'right'
+
 
   // Next position 
   // Position of neighbour/s
@@ -125,11 +175,14 @@ function init() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
         //console.log(enemyArray)
-        updateEnemyPos()
+        checkBoundary()
+        //updateEnemyPos()
+        updateEnemyPosition()
       }, 1000)
       startGame()
     }
   }
+
 
 
   // ? Reset game function 
@@ -140,18 +193,45 @@ function init() {
 
   // ! MOVEMENT 
   //Update enemy position in grid 
+  function movementLogic() {
+    // find location of furthest alien in direcion of travel 
+    //if isAtBorder = true move down and change direction
+    if (enemyDirection === 'right') {
+      enemyArray.findIndex
+    }
+    //if next position is a border then move down a row and chage direction
+  }
+
+
+
+
+
+
+
+
   function updateEnemyPos() {
-    //If last item in array = width of the grid - 1 and the direction is right, increment currentPos by 1 
-    if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth !== gridWidth - 1 && enemyDirection === 'right') {
+
+
+
+
+
+    //If last item with class of enemy in array mod grid  width != width of the grid - 1 and the direction is right, increment currentPos by 1 
+    if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth !== gridWidth - 1 && enemyDirection === 1) {
       updateEnemyPosition(enemyDirection)
 
-    } else if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth === gridWidth - 1 && enemyDirection === 'right') {
+
+
+
+
+
+    } else if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth === gridWidth - 1 && enemyDirection === 1) {
       enemyNextPos = enemyCurrentPos.map(cell => {
-        cell += 10
-        enemyDirection = 'left'
-        return cell
+        if (cells[enemy.currentPos].classList.contains('enemy') && enemy.isAtRightEdge !== true)
+          // cell += 10
+          enemyDirection = 'left'
+        // return cell
       })
-    } else if (enemyCurrentPos[0] % gridWidth !== 0 && enemyDirection === 'left') {
+    } else if (enemyCurrentPos[0] % gridWidth !== 0 && enemyDirection === -1) {
       enemyNextPos = enemyCurrentPos.map(cell => {
         cell--
         return cell
@@ -163,15 +243,6 @@ function init() {
         return cell
       })
     }
-    enemyCurrentPos.forEach(cell => {
-      cells[cell].classList.remove('enemy')
-    })
-    enemyNextPos.forEach(cell => {
-      cells[cell].classList.add('enemy')
-    })
-    enemyCurrentPos = enemyNextPos.map(cell => {
-      return cell
-    })
   }
 
   // Handle projectile movement 
@@ -233,7 +304,7 @@ function init() {
   function spawnEnemies() {
     //dynamically create array here
     let index = 0
-    enemyCurrentPos.push(0, 1, 2, 3, 4, 5, 14, 15, 16, 17, 18)
+    enemyCurrentPos.push(0, 1, 2, 3, 4, 5, 14, 15, 16, 17, 18, 19)
     enemyCurrentPos.forEach(cell => {
       const enemy = new Enemy(index, parseInt(cell))
       enemyArray.push(enemy)
