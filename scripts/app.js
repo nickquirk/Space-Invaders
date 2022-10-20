@@ -37,14 +37,15 @@ function init() {
   // ? player variables
   // Starting position
   let playerCurrentPos
-  // Current position 
+  let lives = 3
+  let totalScore = 0
 
   // ? Enemy variables 
   // Starting position
   const enemyArray = []
-  let enemyCurrentPos = []
-  let enemyNextPos = []
+  const enemyCurrentPos = []
   let enemyDirection = 1
+  let enemyMovedDown = false
 
 
   // ? Enemy Class 
@@ -53,13 +54,12 @@ function init() {
       this.id = id
       this.currentPos = currentPos
       this.isHit = false
-      this.atRightEdge
-      this.atLeftEdge
-      cells[this.currentPos].classList.add('enemy')
+      this.atEdge
+      this.cssClass = 'enemy'
     }
     handleHit() {
       this.isHit = true
-      cells[this.currentPos].classList.remove('enemy')
+      cells[this.currentPos].classList.remove(this.cssClass)
       console.log(`enemy ${this.id} is hit`)
     }
     getId() {
@@ -71,61 +71,71 @@ function init() {
     getHitStatus() {
       return this.isHit
     }
-    isAtRightEdge() {
-      if (enemyDirection === 1 && this.currentPos % gridWidth === gridWidth - 1) {
-        console.log('enemy at right edge')
-        this.atRightEdge = true
-        return true
+    isAtEdge() {
+      if (!this.isHit) {
+        if (this.currentPos % gridWidth === gridWidth - 1) {
+          return true
+        } else if (this.currentPos % gridWidth === 0) {
+          return true
+        } else {
+          return false
+        } 
       } else {
         return false
       }
     }
-    isAtLeftEdge() {
-      if (enemyDirection === -1 && this.currentPos % gridWidth === 0) {
-        console.log('enemy at left edge')
-        this.atLeftEdge = true
-        return true
-      } else {
-        return false
-      }
+    moveRight() {
+
+      this.currentPos = this.currentPos + 1
+    }
+    moveLeft() {
+      this.currentPos = this.currentPos - 1
+    }
+    addClass () {
+      cells[this.currentPos].classList.add(this.cssClass)
     }
   }
 
   // function to handle enemy movement
   function updateEnemyPosition() {
-    if (enemyDirection === 1) {
-      enemyArray.forEach(enemy => {
-        cells[enemy.currentPos].classList.remove('enemy')
-      })
-      enemyArray.forEach(enemy => {
-        if (enemy.atRightEdge !== true && enemyDirection === 1) {
-          enemy.currentPos = enemy.currentPos + 1
-        } else if (enemy.isAtLeftEdge !== true && enemyDirection === -1) {
-          console.log('moving left')
-          enemy.currentPos = enemy.currentPos - 1
-        } else {
-          // reverse enemy direction by using 1 and - 1
-          enemy.currentPos = enemy.currentPos + gridWidth
-          enemyDirection = -1 * enemyDirection
-        }
-      })
-      enemyArray.forEach(enemy => {
-        if (enemy.isHit !== true) {
-          cells[enemy.currentPos].classList.add('enemy')
-        }
-      })
-    } else {
-      console.log('this should not be triggered')
-    }
-  }
-
-  function checkBoundary() {
     enemyArray.forEach(enemy => {
-      enemy.isAtLeftEdge()
-      enemy.isAtRightEdge()
+      cells[enemy.currentPos].classList.remove('enemy')
+    })
+    const atEdge = enemyArray.some(enemy => enemy.isAtEdge())
+    console.log(atEdge)
+
+    enemyArray.forEach(enemy => {
+      //if (cells[enemy.currentPos].classList.contains('enemy')) {
+      if (atEdge && !enemyMovedDown) {
+        // reverse enemy direction by using 1 and - 1
+        enemy.currentPos = enemy.currentPos + gridWidth
+
+        //console.log(enemyDirection)
+        console.log('moving down')
+      } else if (enemyDirection === 1) {
+        enemy.currentPos = enemy.currentPos + 1
+        console.log('moving right')
+
+      } else if (enemyDirection === -1) {
+        enemy.currentPos = enemy.currentPos - 1
+        console.log('moving left')
+
+      } 
+    })
+    if (atEdge && !enemyMovedDown) {
+      enemyMovedDown = true
+      enemyDirection = enemyDirection * -1
+      console.log('moved down true')
+    } else if (atEdge && enemyMovedDown) {
+      enemyMovedDown = false
+      console.log('moved down false')
+    }
+    enemyArray.forEach(enemy => {
+      if (enemy.isHit !== true) {
+        cells[enemy.currentPos].classList.add('enemy')
+      }
     })
   }
-
 
 
 
@@ -160,7 +170,6 @@ function init() {
   createGameGrid()
 
   // ? Start game function 
-
   function startGame() {
     console.log('game started')
     //create game grid should be here
@@ -168,22 +177,19 @@ function init() {
     spawnEnemies()
     //spawn player at starting position
     spawnPlayer(160)
-  }
 
+  }
   // ? TIMERS
   function mainGameTimer() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
         //console.log(enemyArray)
-        checkBoundary()
-        //updateEnemyPos()
+        //checkBoundary()
         updateEnemyPosition()
       }, 1000)
       startGame()
     }
   }
-
-
 
   // ? Reset game function 
   function reset() {
@@ -192,59 +198,6 @@ function init() {
   }
 
   // ! MOVEMENT 
-  //Update enemy position in grid 
-  function movementLogic() {
-    // find location of furthest alien in direcion of travel 
-    //if isAtBorder = true move down and change direction
-    if (enemyDirection === 'right') {
-      enemyArray.findIndex
-    }
-    //if next position is a border then move down a row and chage direction
-  }
-
-
-
-
-
-
-
-
-  function updateEnemyPos() {
-
-
-
-
-
-    //If last item with class of enemy in array mod grid  width != width of the grid - 1 and the direction is right, increment currentPos by 1 
-    if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth !== gridWidth - 1 && enemyDirection === 1) {
-      updateEnemyPosition(enemyDirection)
-
-
-
-
-
-
-    } else if (enemyCurrentPos[enemyCurrentPos.length - 1] % gridWidth === gridWidth - 1 && enemyDirection === 1) {
-      enemyNextPos = enemyCurrentPos.map(cell => {
-        if (cells[enemy.currentPos].classList.contains('enemy') && enemy.isAtRightEdge !== true)
-          // cell += 10
-          enemyDirection = 'left'
-        // return cell
-      })
-    } else if (enemyCurrentPos[0] % gridWidth !== 0 && enemyDirection === -1) {
-      enemyNextPos = enemyCurrentPos.map(cell => {
-        cell--
-        return cell
-      })
-    } else {
-      enemyNextPos = enemyCurrentPos.map(cell => {
-        cell += 10
-        enemyDirection = 'right'
-        return cell
-      })
-    }
-  }
-
   // Handle projectile movement 
   function updateProjectilePos() {
     projectileTimer = setInterval(() => {
@@ -303,13 +256,23 @@ function init() {
   // Enemy
   function spawnEnemies() {
     //dynamically create array here
-    let index = 0
-    enemyCurrentPos.push(0, 1, 2, 3, 4, 5, 14, 15, 16, 17, 18, 19)
-    enemyCurrentPos.forEach(cell => {
-      const enemy = new Enemy(index, parseInt(cell))
+    for (let i = 1; i < 10; i++){
+      enemyCurrentPos.push(i)
+    }
+    // for (let i = 15; i < 24; i++){
+    //   enemyCurrentPos.push(i)
+    // }
+    // for (let i = 29; i < 38; i++){
+    //   enemyCurrentPos.push(i)
+    // }
+    // for (let i = 43; i < 52; i++){
+    //   enemyCurrentPos.push(i)
+    // }
+    enemyCurrentPos.forEach((cell, index) => {
+      const enemy = new Enemy(index, cell)
       enemyArray.push(enemy)
+      enemy.addClass()
       console.log(`enemy added at cell ${cell}`)
-      index++
     })
   }
   // Projectiles
