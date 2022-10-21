@@ -1,6 +1,5 @@
 // TODO
-// Make dynamic grid wrapper
-// resize cells automatically depending on grid size 
+//favicon
 
 function init() {
   // ! ELEMENTS
@@ -11,7 +10,7 @@ function init() {
   // grid
   const grid = document.querySelector('.grid')
   //lives span
-  const livesSpan = document.querySelector('#lives-span')
+  const lives = document.querySelectorAll('.life')
 
   // enemies 
   // grid cells
@@ -28,7 +27,6 @@ function init() {
   // let enemyProjectileTimer
   let enemyShotTimer
 
-
   // ? Grid variables
   // width of grid
   const gridWidth = 14
@@ -39,17 +37,18 @@ function init() {
   // Starting position
   let player
   let playerCurrentPos
-  let lives = 3
   let totalScore = 0
 
 
   class Player {
-    constructor(lives, startingPos) {
+    constructor(startingPos) {
       this.lives = 3
       this.currentPos = startingPos
     }
     handleHit() {
       console.log('player hit')
+      this.lives = this.lives - 1
+      lives[this.lives].classList.remove('life')
     }
   }
 
@@ -101,7 +100,7 @@ function init() {
       cells[this.currentPos].classList.add(this.cssClass)
     }
     canShoot() {
-      if (!cells[this.currentPos + gridWidth].classList.contains('enemy') && this.isHit === false ) {
+      if (!cells[this.currentPos + gridWidth].classList.contains('enemy') && this.isHit === false) {
         return true
       } else {
         return false
@@ -115,7 +114,7 @@ function init() {
     //move projectile forward until it hits bottom of grid or player 
     const enemiesThatCanShoot = []
     enemyArray.forEach(enemy => {
-      if (enemiesThatCanShoot,enemy.canShoot()) {
+      if (enemiesThatCanShoot, enemy.canShoot()) {
         enemiesThatCanShoot.push(enemy.currentPos)
       }
     })
@@ -174,15 +173,19 @@ function init() {
       this.timer = setInterval(() => {
         // remove previous projectile
         this.removeProjectileCssClass()
-        if (this.currentPos >= gridWidth) {
+        if (this.currentPos < cellCount - gridWidth) {
           this.currentPos = this.currentPos + this.direction
           this.addProjectileCssClass()
           if (cells[this.currentPos].classList.contains(this.enemy)) {
-            enemyArray.forEach(enemy => {
-              if (enemy.currentPos === this.currentPos) {
-                enemy.handleHit()
-              }
-            })
+            if (this.enemy === 'enemy') {
+              enemyArray.forEach(enemy => {
+                if (enemy.currentPos === this.currentPos) {
+                  enemy.handleHit()
+                }
+              })
+            } else {
+              player.handleHit()
+            }
             this.removeProjectileCssClass()
             clearInterval(this.timer)
           }
@@ -241,7 +244,7 @@ function init() {
     window.location.reload()
   }
 
-  function startEnemyShotTimer(){
+  function startEnemyShotTimer() {
     enemyShotTimer = setInterval(() => {
       handleEnemyShot()
     }, 3000)
