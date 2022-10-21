@@ -11,20 +11,21 @@ function init() {
   const grid = document.querySelector('.grid')
   //lives span
   const lives = document.querySelectorAll('.life')
-
-  // enemies 
-  // grid cells
+// score span
+  const score = document.querySelector('#score-span')
+  //grid cells
   const cells = []
-  // lives display span
-  // score display span
+// modal 
+const modal = document.querySelector('#endgame-modal')
+const modalClose = document.querySelector('.close')
+const modalScore = document.querySelector('#modal-score')
+
 
   // ! VARIABLES 
   // score
   // lives
   // ? Game variables
   let gameTimer
-  // let playerProjectileTimer
-  // let enemyProjectileTimer
   let enemyShotTimer
 
   // ? Grid variables
@@ -48,7 +49,12 @@ function init() {
     handleHit() {
       console.log('player hit')
       this.lives = this.lives - 1
-      lives[this.lives].classList.remove('life')
+      if (this.lives > 0) {
+        lives[this.lives].classList.remove('life')
+      } else {
+        lives[0].classList.remove('life')
+        endGame()
+      }
     }
   }
 
@@ -58,6 +64,7 @@ function init() {
   const enemyCurrentPos = []
   let enemyDirection = 1
   let enemyMovedDown = false
+  let totalEnemy
 
 
   // ? Enemy Class 
@@ -125,6 +132,9 @@ function init() {
   function updateEnemyPosition() {
     enemyArray.forEach(enemy => {
       cells[enemy.currentPos].classList.remove('enemy')
+      if (enemy.currentPos > gridWidth * (gridHeight - 1)) {
+        endGame()
+      }
     })
     const atEdge = enemyArray.some(enemy => enemy.isAtEdge())
     enemyArray.forEach(enemy => {
@@ -136,7 +146,6 @@ function init() {
         enemy.currentPos = enemy.currentPos - 1
       }
     })
-    // this creates crazy movement bug 
     if (atEdge && !enemyMovedDown) {
       enemyMovedDown = true
       enemyDirection = enemyDirection * -1
@@ -160,6 +169,7 @@ function init() {
       this.enemy = enemy
       this.currentPos = currentPos
       this.direction = direction
+      this.count
       this.addProjectileCssClass()
       this.moveProjectile()
     }
@@ -172,12 +182,18 @@ function init() {
     moveProjectile() {
       this.timer = setInterval(() => {
         // remove previous projectile
+        if (this.currentPos < 0) {
+          clearInterval(this.timer)
+          this.removeProjectileCssClass()
+          return 
+        }
         this.removeProjectileCssClass()
         if (this.currentPos < cellCount - gridWidth) {
           this.currentPos = this.currentPos + this.direction
           this.addProjectileCssClass()
           if (cells[this.currentPos].classList.contains(this.enemy)) {
             if (this.enemy === 'enemy') {
+              updatePlayerScore()
               enemyArray.forEach(enemy => {
                 if (enemy.currentPos === this.currentPos) {
                   enemy.handleHit()
@@ -194,6 +210,9 @@ function init() {
           clearInterval(this.timer)
         }
       }, 100)
+    }
+    projectileCount(){
+      this.count = 1
     }
   }
 
@@ -213,19 +232,46 @@ function init() {
       cells.push(cell)
     }
   }
-  // on page load dynamically create game grid 
-  //move to startGame()
-  createGameGrid()
 
   // ? Start game function 
   function startGame() {
     console.log('game started')
     //create game grid should be here
+    createGameGrid()
     //spawn enemies at starting position
     spawnEnemies()
     //spawn player at starting position
     spawnPlayer(160)
     startEnemyShotTimer()
+    modal.style.display = 'block'
+  }
+
+  function endGame(){
+    clearInterval(gameTimer)
+    clearInterval(enemyShotTimer)
+    modalScore.innerText = `${totalScore}`
+    modal.style.display = 'block'
+  }
+
+  function closeModal() {
+    modal.style.display = 'none'
+  }
+
+  function updatePlayerScore() {
+    totalScore += 100
+    score.innerText = `${totalScore}`
+  }
+
+  function enemyRemaining() {
+    let enemyOnGrid = totalEnemy
+    enemyArray.forEach((enemy) => {
+      if (enemy.isHit) {
+        enemyOnGrid--   
+      }
+    })
+    if (enemyOnGrid === 0) {
+      endGame()
+    }
   }
 
   // ? TIMERS
@@ -233,6 +279,7 @@ function init() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
         updateEnemyPosition()
+        enemyRemaining()
       }, 1000)
       startGame()
     }
@@ -249,10 +296,6 @@ function init() {
       handleEnemyShot()
     }, 3000)
   }
-
-
-  //Alien shooting timer - every 3 seconds 
-  //handleEnemyShot()
 
 
   // ! MOVEMENT
@@ -291,25 +334,24 @@ function init() {
     for (let i = 15; i < 24; i++) {
       enemyCurrentPos.push(i)
     }
-    // for (let i = 29; i < 38; i++){
-    //   enemyCurrentPos.push(i)
-    // }
-    // for (let i = 43; i < 52; i++){
-    //   enemyCurrentPos.push(i)
-    // }
+    for (let i = 29; i < 38; i++){
+      enemyCurrentPos.push(i)
+    }
+    for (let i = 43; i < 52; i++){
+      enemyCurrentPos.push(i)
+    }
     enemyCurrentPos.forEach((cell, index) => {
       const enemy = new Enemy(index, cell)
       enemyArray.push(enemy)
       enemy.addClass()
+      totalEnemy = enemyArray.length
     })
   }
   // Projectiles
   function spawnProjectile(origin, position) {
     if (origin === 'enemy') {
-      console.log('enemy fired')
       enemyProjectile = new Projectile(origin, position + gridWidth, 'player', gridWidth)
     } else {
-      console.log(`player fired at ${position}`)
       playerProjectile = new Projectile(origin, position - gridWidth, 'enemy', -gridWidth)
     }
   }
@@ -325,9 +367,8 @@ function init() {
   document.addEventListener('keydown', handlePlayerMovement)
   //      - Arrow keys to move
   //      - Space to fire
-
-
-
+  // Modal
+  modalClose.addEventListener('click', closeModal)
 
 
 }
