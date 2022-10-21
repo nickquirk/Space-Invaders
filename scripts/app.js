@@ -40,6 +40,11 @@ function init() {
   let playerCurrentPos
   let totalScore = 0
 
+  // ? Projectile variables
+  let enemyProjectile
+  let playerProjectile
+  let playerProjectileCount = 0
+
 
   class Player {
     constructor(startingPos) {
@@ -159,25 +164,22 @@ function init() {
     })
   }
 
-  // ? Projectile variables
-  let enemyProjectile
-  let playerProjectile
-
   class Projectile {
     constructor(origin, currentPos, enemy, direction) {
       this.origin = origin
       this.enemy = enemy
       this.currentPos = currentPos
       this.direction = direction
-      this.count
       this.addProjectileCssClass()
       this.moveProjectile()
     }
     addProjectileCssClass() {
       cells[this.currentPos].classList.add(`${this.origin}-projectile`)
+      console.log(this.count)
     }
     removeProjectileCssClass() {
       cells[this.currentPos].classList.remove('enemy-projectile', 'player-projectile')
+
     }
     moveProjectile() {
       this.timer = setInterval(() => {
@@ -197,6 +199,10 @@ function init() {
               enemyArray.forEach(enemy => {
                 if (enemy.currentPos === this.currentPos) {
                   enemy.handleHit()
+                  if (playerProjectileCount > 0) {
+                    playerProjectileCount--
+                  }
+                  
                 }
               })
             } else {
@@ -204,15 +210,16 @@ function init() {
             }
             this.removeProjectileCssClass()
             clearInterval(this.timer)
+            console.log(this.count)
           }
         } else {
           this.removeProjectileCssClass()
           clearInterval(this.timer)
+          if (playerProjectileCount > 0) {
+            playerProjectileCount--
+          }
         }
       }, 100)
-    }
-    projectileCount() {
-      this.count = 1
     }
   }
 
@@ -350,8 +357,9 @@ function init() {
   function spawnProjectile(origin, position) {
     if (origin === 'enemy') {
       enemyProjectile = new Projectile(origin, position + gridWidth, 'player', gridWidth)
-    } else {
+    } else if (playerProjectileCount < 1){
       playerProjectile = new Projectile(origin, position - gridWidth, 'enemy', -gridWidth)
+      playerProjectileCount++
     }
   }
 
