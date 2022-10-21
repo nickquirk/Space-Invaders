@@ -153,6 +153,7 @@ button {
   background-size: contain;
 }
 
+/* Modal */
 .modal {
   display: none; 
   position: fixed; 
@@ -166,7 +167,7 @@ button {
 }
 
 .modal-content {
-  background-color: rgba(4, 4, 95, 0.587);
+  background-color: rgba(4, 4, 95, 0.646);
   margin: 50% auto; 
   padding: 20px;
   border: 2px solid rgb(120, 200, 255);

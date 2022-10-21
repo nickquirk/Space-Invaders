@@ -11,14 +11,14 @@ function init() {
   const grid = document.querySelector('.grid')
   //lives span
   const lives = document.querySelectorAll('.life')
-// score span
+  // score span
   const score = document.querySelector('#score-span')
   //grid cells
   const cells = []
-// modal 
-const modal = document.querySelector('#endgame-modal')
-const modalClose = document.querySelector('.close')
-const modalScore = document.querySelector('#modal-score')
+  // modal 
+  const modal = document.querySelector('#endgame-modal')
+  const modalClose = document.querySelector('.close')
+  const modalScore = document.querySelector('#modal-score')
 
 
   // ! VARIABLES 
@@ -185,7 +185,7 @@ const modalScore = document.querySelector('#modal-score')
         if (this.currentPos < 0) {
           clearInterval(this.timer)
           this.removeProjectileCssClass()
-          return 
+          return
         }
         this.removeProjectileCssClass()
         if (this.currentPos < cellCount - gridWidth) {
@@ -211,7 +211,7 @@ const modalScore = document.querySelector('#modal-score')
         }
       }, 100)
     }
-    projectileCount(){
+    projectileCount() {
       this.count = 1
     }
   }
@@ -243,10 +243,9 @@ const modalScore = document.querySelector('#modal-score')
     //spawn player at starting position
     spawnPlayer(160)
     startEnemyShotTimer()
-    modal.style.display = 'block'
   }
 
-  function endGame(){
+  function endGame() {
     clearInterval(gameTimer)
     clearInterval(enemyShotTimer)
     modalScore.innerText = `${totalScore}`
@@ -266,7 +265,7 @@ const modalScore = document.querySelector('#modal-score')
     let enemyOnGrid = totalEnemy
     enemyArray.forEach((enemy) => {
       if (enemy.isHit) {
-        enemyOnGrid--   
+        enemyOnGrid--
       }
     })
     if (enemyOnGrid === 0) {
@@ -334,10 +333,10 @@ const modalScore = document.querySelector('#modal-score')
     for (let i = 15; i < 24; i++) {
       enemyCurrentPos.push(i)
     }
-    for (let i = 29; i < 38; i++){
+    for (let i = 29; i < 38; i++) {
       enemyCurrentPos.push(i)
     }
-    for (let i = 43; i < 52; i++){
+    for (let i = 43; i < 52; i++) {
       enemyCurrentPos.push(i)
     }
     enemyCurrentPos.forEach((cell, index) => {
