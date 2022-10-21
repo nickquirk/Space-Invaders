@@ -52,7 +52,6 @@ function init() {
       this.currentPos = startingPos
     }
     handleHit() {
-      console.log('player hit')
       this.lives = this.lives - 1
       if (this.lives > 0) {
         lives[this.lives].classList.remove('life')
@@ -175,7 +174,6 @@ function init() {
     }
     addProjectileCssClass() {
       cells[this.currentPos].classList.add(`${this.origin}-projectile`)
-      console.log(this.count)
     }
     removeProjectileCssClass() {
       cells[this.currentPos].classList.remove('enemy-projectile', 'player-projectile')
@@ -210,7 +208,6 @@ function init() {
             }
             this.removeProjectileCssClass()
             clearInterval(this.timer)
-            console.log(this.count)
           }
         } else {
           this.removeProjectileCssClass()
