@@ -139,14 +139,14 @@ button {
   background-size: contain;
 }
 
-.playerProjectile {
+.player-projectile {
   background-image: url(../assets/laser-blue5.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
 }
 
-.enemyProjectile {
+.enemy-projectile {
   background-image: url(../assets/laser-red.png);
   background-repeat: no-repeat;
   background-position: center;
