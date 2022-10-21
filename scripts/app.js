@@ -10,6 +10,9 @@ function init() {
   const resetButton = document.querySelector('#reset-button')
   // grid
   const grid = document.querySelector('.grid')
+  //lives span
+  const livesSpan = document.querySelector('#lives-span')
+
   // enemies 
   // grid cells
   const cells = []
@@ -29,16 +32,20 @@ function init() {
   const gridWidth = 14
   const gridHeight = 12
   const cellCount = gridWidth * gridHeight
-  grid.style.offsetHeight = '50px'
-  grid.style.offsetWidth = '50px'
-  grid.style.border = '1px solid black'
-
 
   // ? player variables
   // Starting position
   let playerCurrentPos
   let lives = 3
   let totalScore = 0
+
+
+  class Player {
+    constructor(lives, startingPos) {
+      this.lives = 3
+      this.currentPos = startingPos
+    }
+  }
 
   // ? Enemy variables 
   // Starting position
@@ -48,11 +55,12 @@ function init() {
   let enemyMovedDown = false
 
 
+
   // ? Enemy Class 
   class Enemy {
-    constructor(id, currentPos) {
+    constructor(id, startingPos) {
       this.id = id
-      this.currentPos = currentPos
+      this.currentPos = startingPos
       this.isHit = false
       this.atEdge
       this.cssClass = 'enemy'
@@ -79,22 +87,34 @@ function init() {
           return true
         } else {
           return false
-        } 
+        }
       } else {
         return false
       }
     }
-    moveRight() {
-
-      this.currentPos = this.currentPos + 1
-    }
-    moveLeft() {
-      this.currentPos = this.currentPos - 1
-    }
-    addClass () {
+    addClass() {
       cells[this.currentPos].classList.add(this.cssClass)
     }
+    canShoot() {
+      if (!cells[this.currentPos + gridWidth].classList.contains('enemy')) {
+        return true
+      } else {
+        return false
+      }
+    }
   }
+
+  function handleAlienShot() {
+    //pick random alien with no alien in front of it
+    //spawn projectile in front of alien
+    //move projectile forward until it hits bottom of grid or player 
+    enemyArray.forEach(enemy => {
+      if (enemy.canShoot()) {
+        spawnProjectile('enemy', enemy.currentPos)
+      }
+    })
+  }
+
 
   // function to handle enemy movement
   function updateEnemyPosition() {
@@ -102,33 +122,31 @@ function init() {
       cells[enemy.currentPos].classList.remove('enemy')
     })
     const atEdge = enemyArray.some(enemy => enemy.isAtEdge())
-    console.log(atEdge)
+    //console.log(atEdge)
 
     enemyArray.forEach(enemy => {
-      //if (cells[enemy.currentPos].classList.contains('enemy')) {
       if (atEdge && !enemyMovedDown) {
         // reverse enemy direction by using 1 and - 1
         enemy.currentPos = enemy.currentPos + gridWidth
-
-        //console.log(enemyDirection)
-        console.log('moving down')
+        //console.log('moving down')
       } else if (enemyDirection === 1) {
         enemy.currentPos = enemy.currentPos + 1
-        console.log('moving right')
+        //console.log('moving right')
 
       } else if (enemyDirection === -1) {
         enemy.currentPos = enemy.currentPos - 1
-        console.log('moving left')
+        //console.log('moving left')
 
-      } 
+      }
     })
+    // this creates crazy movement bug 
     if (atEdge && !enemyMovedDown) {
       enemyMovedDown = true
       enemyDirection = enemyDirection * -1
-      console.log('moved down true')
+      //console.log('moved down true')
     } else if (atEdge && enemyMovedDown) {
       enemyMovedDown = false
-      console.log('moved down false')
+      //console.log('moved down false')
     }
     enemyArray.forEach(enemy => {
       if (enemy.isHit !== true) {
@@ -137,18 +155,37 @@ function init() {
     })
   }
 
-
-
-  // Current position 
-
-
-  // Next position 
-  // Position of neighbour/s
-
   // ? Projectile variables
   let projectileCurrentPos
   let projectileNextPos
-  let projectileOnGrid = false
+  //let projectileOnGrid = false
+  let enemyProjectile
+  let playerProjectile
+  let playerProjectileOnGrid
+
+  class Projectile {
+    constructor(origin, currentPos) {
+      this.origin = origin
+      this.currentPos = currentPos
+      this.isOnGrid = false
+      this.addProjectileClass()
+    }
+    addProjectileClass() {
+      if (this.origin === 'enemy') {
+        cells[this.currentPos].classList.add('enemyProjectile')
+      } else {
+        cells[this.currentPos].classList.add('playerProjectile')
+      }
+    }
+    removeProjectileClass() {
+      if (this.origin === 'enemy') {
+        cells[this.currentPos].classList.remove('enemyProjectile')
+      } else {
+        cells[this.currentPos].classList.remove('playerProjectile')
+      }
+    }
+
+  }
 
   // ! FUNCTIONS
   // ? Create game grid 
@@ -157,7 +194,7 @@ function init() {
       // Create element dynamically using createElement
       const cell = document.createElement('div')
       // Display index of grid element
-      cell.innerHTML = i
+      //cell.innerHTML = i
       // Add the index as a data-id
       cell.id = i
       // Append the new cell to the grid 
@@ -183,14 +220,12 @@ function init() {
   function mainGameTimer() {
     if (!gameTimer) {
       gameTimer = setInterval(() => {
-        //console.log(enemyArray)
-        //checkBoundary()
         updateEnemyPosition()
+        //handleAlienShot()
       }, 1000)
       startGame()
     }
   }
-
   // ? Reset game function 
   function reset() {
     clearInterval(gameTimer)
@@ -202,32 +237,31 @@ function init() {
   function updateProjectilePos() {
     projectileTimer = setInterval(() => {
       // remove previous projectile
-      cells[projectileCurrentPos].classList.remove('projectile')
-
-      // If projectile is  not at top of grid and cell doesn't contain an enemy or another projectile, move projectile forward away from player 
-      if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') !== true && cells[projectileCurrentPos].classList.contains('projectile') !== true) {
-        projectileNextPos = projectileCurrentPos - gridWidth
-        cells[projectileNextPos].classList.add('projectile')
-        projectileCurrentPos = projectileNextPos
-
-        // If projectile is  not at top of grid and cell contains an enemy or another projectile, move projectile forward away from player 
-      } else if (projectileCurrentPos >= gridHeight && cells[projectileCurrentPos].classList.contains('enemy') === true) {
-        //get id of enemy object that is in cell id of projectile current pos 
-        const enemyHitLocation = parseInt(cells[projectileCurrentPos].id)
+      console.log(playerProjectile.isOnGrid)
+      playerProjectile.removeProjectileClass()
+      if (playerProjectile.currentPos >= gridWidth && cells[playerProjectile.currentPos].classList.contains('enemy') !== true) {
+        playerProjectile.currentPos = playerProjectile.currentPos - gridWidth
+        playerProjectile.addProjectileClass()
+      } else if (cells[playerProjectile.currentPos].classList.contains('enemy')) {
+        //refactor, this is insane
+        const enemyHitLocation = parseInt(cells[playerProjectile.currentPos].id)
         const enemyId = enemyArray.findIndex(enemy => enemy.currentPos === enemyHitLocation)
         enemyArray[enemyId].handleHit()
-
-        cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
-        projectileOnGrid = false
+        playerProjectile.isOnGrid = false
+        playerProjectile.removeProjectileClass()
         clearInterval(projectileTimer)
-
       } else {
-        cells[projectileCurrentPos].classList.remove('enemy', 'projectile')
-        projectileOnGrid = false
+        playerProjectile.removeProjectileClass()
+        playerProjectile.isOnGrid = false
         clearInterval(projectileTimer)
       }
+      // } else if (enemyProjectile.isOnGrid) {
+      //   enemyProjectile.removeProjectileClass()
+      // }
     }, 100)
   }
+
+
 
   // Function to handle player movement from user input 
   function handlePlayerMovement(event) {
@@ -241,7 +275,7 @@ function init() {
     } else if (key === left && playerCurrentPos % gridWidth !== 0) {
       playerCurrentPos--
     } else if (key === space) {
-      spawnProjectile(playerCurrentPos)
+      spawnProjectile('player', playerCurrentPos)
     }
     cells[playerCurrentPos].classList.add('player')
   }
@@ -249,6 +283,7 @@ function init() {
   // ! SPAWN FUNCTIONS
   //Player
   function spawnPlayer(position) {
+    const player = new Player(position)
     playerCurrentPos = position
     cells[playerCurrentPos].classList.add('player')
   }
@@ -256,12 +291,12 @@ function init() {
   // Enemy
   function spawnEnemies() {
     //dynamically create array here
-    for (let i = 1; i < 10; i++){
+    for (let i = 1; i < 10; i++) {
       enemyCurrentPos.push(i)
     }
-    // for (let i = 15; i < 24; i++){
-    //   enemyCurrentPos.push(i)
-    // }
+    for (let i = 15; i < 24; i++) {
+      enemyCurrentPos.push(i)
+    }
     // for (let i = 29; i < 38; i++){
     //   enemyCurrentPos.push(i)
     // }
@@ -272,21 +307,33 @@ function init() {
       const enemy = new Enemy(index, cell)
       enemyArray.push(enemy)
       enemy.addClass()
-      console.log(`enemy added at cell ${cell}`)
     })
   }
   // Projectiles
-  function spawnProjectile(position) {
-    if (projectileOnGrid === false) {
-      projectileCurrentPos = position - gridWidth
-      cells[projectileCurrentPos].classList.add('projectile')
-      updateProjectilePos()
-      projectileOnGrid = true
-    }
+  function spawnProjectile(origin, position) {
+    if (origin === 'enemy' && !enemyProjectile) {
+      console.log('enemy fired')
+      enemyProjectile = new Projectile(origin, position + gridWidth)
+      enemyProjectile.addProjectileClass()
+      enemyProjectile.isOnGrid = true
+    } else if (origin === 'player') {
+      console.log(`player fired at ${position}`)
+      playerProjectile = new Projectile(origin, position - gridWidth)
+      playerProjectile.addProjectileClass()
+      playerProjectile.isOnGrid = true
+    } 
+    updateProjectilePos()
   }
 
+  // if (projectileOnGrid === false) {
+  //   projectileCurrentPos = position - gridWidth
+  //   cells[projectileCurrentPos].classList.add('projectile')
+  //   updateProjectilePos()
+  //   projectileOnGrid = true
+  // }
 
-  // ? End game screen 
+
+  // ? End game screen s
 
   // ! EVENTS
   // Start button

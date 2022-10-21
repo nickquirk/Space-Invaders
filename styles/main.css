@@ -7,12 +7,14 @@ body {
   margin: 0;
   font-family: 'Orbitron', sans-serif;
   color: white;
+  background-image: url('../assets/space-background.webp');
 }
 
 #header-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 860px;
   background-color: rgba(0, 0, 0, 0.76);
   background-image: url(../assets/preview-411962-722lundHsI-high_0000.jpg);
   background-repeat: no-repeat;
@@ -31,6 +33,7 @@ h1 {
   text-decoration: overline;
 }
 
+
 #interface-container {
   display: flex;
   justify-content: space-around;
@@ -46,32 +49,42 @@ h1 {
 }
 
 .grid-wrapper {
-  height: 80vh;
+  height: 40vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-image: url('../assets/pngtree-blue-information-technology-background-framelinepointblue-image_63400.jpg'); */
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 
 .grid {
   align-items: center;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2); */
   display: flex;
   flex-wrap: wrap;
-  height: 100%;
   justify-content: center;
   height: 600px;
   width: 800px;
+  background-image: url('../assets/BlueTechInsideResized3.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .grid div {
-  border: 1px solid lightgrey;
+  /* border: 1px solid lightgrey; */
   flex-grow: 1;
   height: calc(100% / 12);
   width: calc(100% / 14);
-  color: black;
+  /* color: black; */
+}
+#grid-border {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 660px;
+  width: 860px;
+  background-image: url('../assets/BlueTechFrameResized2.png');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 /* #start-button{
@@ -85,8 +98,22 @@ h1 {
   border: 2px solid black;
 } */
 
-main {
-  /* background-image: url(../assets/Background.jpeg); */
+#lives-container{
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 200px;
+  height: 60px;
+}
+
+.life {
+  height: 35px;
+  width: 35px;
+  margin-right: 10px;
+  background-image: url(../assets/life-hex.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
 
 button {
@@ -99,7 +126,7 @@ button {
 }
 
 .enemy {
-  background-image: url(../assets/space-invader-alien-1.png);
+  background-image: url(../assets/invader-blue.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -112,8 +139,15 @@ button {
   background-size: contain;
 }
 
-.projectile {
-  background-image: url(../assets/projectile1.png);
+.playerProjectile {
+  background-image: url(../assets/laser-blue5.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.enemyProjectile {
+  background-image: url(../assets/laser-red.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
