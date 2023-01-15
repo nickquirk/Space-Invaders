@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Space Invaders
 
@@ -395,3 +396,7 @@ I’ve already outlined that the enemy movement was one of the biggest challenge
 * Add destructible buildings
 * Increase speed of aliens as they descend and add faster 
 * Optimise for mobile 
+=======
+# Space-Invaders
+A Space Invaders style browser game made with JavaScript 
+>>>>>>> a35497a21cd7a5e9acdacad2dafe7cdcef1b72e1
