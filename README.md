@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # Space Invaders
 
 This was the first project of the course and was developed using vanilla JavaScript. The task was to create a basic browser game using a grid rather than HTML canvas. I decided to create a version of the classic arcade game Space Invaders!  
